@@ -1,0 +1,29 @@
+# 環境變數
+.env
+.env.local
+.env.*.local
+
+# 依賴套件
+node_modules/
+
+# 日誌
+logs/
+*.log
+npm-debug.log*
+
+# 編輯器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 作業系統
+.DS_Store
+Thumbs.db
+
+# 測試覆蓋率
+coverage/
+
+# 建置輸出
+dist/
+build/
