@@ -1,0 +1,1058 @@
+{
+  "realms": [
+    {
+      "realm_name": "煉氣境",
+      "realm_name_en": "Qi Refinement Realm",
+      "realm_order": 1,
+      "description": "修仙之路的起點，修士通過吸收天地靈氣，淬煉肉身，為築基打下根基。此境界雖為入門，但根基是否穩固將影響未來修行之路。",
+      "max_hp": 100,
+      "max_mp": 50,
+      "attack": 10,
+      "defense": 5,
+      "spirit": 20,
+      "stages": [
+        {
+          "stage_name": "初期",
+          "stage_name_en": "Early Stage",
+          "stage_order": 1,
+          "is_extreme": false,
+          "exp_required": 1000,
+          "stat_multiplier": 1.0,
+          "stat_bonus": {
+            "spirit": 5
+          }
+        },
+        {
+          "stage_name": "中期",
+          "stage_name_en": "Middle Stage",
+          "stage_order": 2,
+          "is_extreme": false,
+          "exp_required": 2500,
+          "stat_multiplier": 1.2,
+          "stat_bonus": {
+            "spirit": 10,
+            "max_mp": 20
+          }
+        },
+        {
+          "stage_name": "後期",
+          "stage_name_en": "Late Stage",
+          "stage_order": 3,
+          "is_extreme": false,
+          "exp_required": 5000,
+          "stat_multiplier": 1.5,
+          "stat_bonus": {
+            "spirit": 15,
+            "max_mp": 30,
+            "attack": 5
+          }
+        },
+        {
+          "stage_name": "巔峰",
+          "stage_name_en": "Peak Stage",
+          "stage_order": 4,
+          "is_extreme": false,
+          "exp_required": 10000,
+          "stat_multiplier": 1.8,
+          "stat_bonus": {
+            "spirit": 25,
+            "max_mp": 50,
+            "attack": 10,
+            "defense": 5
+          }
+        },
+        {
+          "stage_name": "極境",
+          "stage_name_en": "Extreme Stage",
+          "stage_order": 5,
+          "is_extreme": true,
+          "exp_required": 20000,
+          "stat_multiplier": 2.5,
+          "stat_bonus": {
+            "spirit": 50,
+            "max_mp": 100,
+            "attack": 20,
+            "defense": 10,
+            "crit_rate": 5
+          }
+        }
+      ],
+      "breakthrough_requirements": [
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 101,
+                "item_name": "築基丹",
+                "quantity": 1
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 100,
+            "level": 20
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 102,
+                "item_name": "極境靈石",
+                "quantity": 5
+              },
+              {
+                "item_id": 103,
+                "item_name": "煉氣精髓",
+                "quantity": 3
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "quest",
+          "requirement_data": {
+            "quest_id": 1001,
+            "quest_name": "煉氣極境試煉",
+            "description": "在靈氣風暴中修煉七日七夜不死"
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 150,
+            "breakthrough_success_rate": 30
+          }
+        }
+      ],
+      "skill_unlocks": [
+        {
+          "stage_name": "初期",
+          "skill_id": 1,
+          "skill_name": "靈氣彈",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "skill_id": 2,
+          "skill_name": "靈氣護盾",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "skill_id": 3,
+          "skill_name": "靈氣風暴",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "skill_id": 4,
+          "skill_name": "煉氣天罡",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "skill_id": 5,
+          "skill_name": "極境爆發",
+          "is_extreme_only": true
+        }
+      ],
+      "equipment_unlocks": [
+        {
+          "stage_name": "初期",
+          "min_level": 1,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "min_level": 5,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "min_level": 10,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "min_level": 15,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "min_level": 20,
+          "is_extreme_only": true
+        }
+      ]
+    },
+    {
+      "realm_name": "築基境",
+      "realm_name_en": "Foundation Establishment Realm",
+      "realm_order": 2,
+      "description": "在煉氣境打下的基礎上，修士開始築建道基，凝練靈力。成功築基者可御器飛行，壽命大增，是真正踏入修仙之路的門檻。",
+      "max_hp": 300,
+      "max_mp": 150,
+      "attack": 35,
+      "defense": 20,
+      "spirit": 60,
+      "stages": [
+        {
+          "stage_name": "初期",
+          "stage_name_en": "Early Stage",
+          "stage_order": 1,
+          "is_extreme": false,
+          "exp_required": 15000,
+          "stat_multiplier": 1.0,
+          "stat_bonus": {
+            "spirit": 10,
+            "max_hp": 50
+          }
+        },
+        {
+          "stage_name": "中期",
+          "stage_name_en": "Middle Stage",
+          "stage_order": 2,
+          "is_extreme": false,
+          "exp_required": 30000,
+          "stat_multiplier": 1.3,
+          "stat_bonus": {
+            "spirit": 20,
+            "max_mp": 50,
+            "defense": 10
+          }
+        },
+        {
+          "stage_name": "後期",
+          "stage_name_en": "Late Stage",
+          "stage_order": 3,
+          "is_extreme": false,
+          "exp_required": 60000,
+          "stat_multiplier": 1.6,
+          "stat_bonus": {
+            "spirit": 30,
+            "max_mp": 80,
+            "attack": 15,
+            "defense": 15
+          }
+        },
+        {
+          "stage_name": "巔峰",
+          "stage_name_en": "Peak Stage",
+          "stage_order": 4,
+          "is_extreme": false,
+          "exp_required": 100000,
+          "stat_multiplier": 2.0,
+          "stat_bonus": {
+            "spirit": 50,
+            "max_mp": 120,
+            "attack": 25,
+            "defense": 20,
+            "max_hp": 100
+          }
+        },
+        {
+          "stage_name": "極境",
+          "stage_name_en": "Extreme Stage",
+          "stage_order": 5,
+          "is_extreme": true,
+          "exp_required": 180000,
+          "stat_multiplier": 3.0,
+          "stat_bonus": {
+            "spirit": 100,
+            "max_mp": 200,
+            "attack": 50,
+            "defense": 40,
+            "max_hp": 200,
+            "crit_rate": 8,
+            "dodge": 5
+          }
+        }
+      ],
+      "breakthrough_requirements": [
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 201,
+                "item_name": "結金丹",
+                "quantity": 1
+              },
+              {
+                "item_id": 202,
+                "item_name": "天材地寶",
+                "quantity": 3
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 300,
+            "level": 40
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 203,
+                "item_name": "極境道石",
+                "quantity": 10
+              },
+              {
+                "item_id": 204,
+                "item_name": "築基聖液",
+                "quantity": 5
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "quest",
+          "requirement_data": {
+            "quest_id": 2001,
+            "quest_name": "築基極境試煉",
+            "description": "在天劫雷霆中凝練道基"
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 400,
+            "breakthrough_success_rate": 25
+          }
+        }
+      ],
+      "skill_unlocks": [
+        {
+          "stage_name": "初期",
+          "skill_id": 11,
+          "skill_name": "御劍術",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "skill_id": 12,
+          "skill_name": "靈盾陣",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "skill_id": 13,
+          "skill_name": "劍氣縱橫",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "skill_id": 14,
+          "skill_name": "萬劍歸宗",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "skill_id": 15,
+          "skill_name": "築基極境·劍域",
+          "is_extreme_only": true
+        }
+      ],
+      "equipment_unlocks": [
+        {
+          "stage_name": "初期",
+          "min_level": 25,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "min_level": 30,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "min_level": 35,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "min_level": 40,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "min_level": 45,
+          "is_extreme_only": true
+        }
+      ]
+    },
+    {
+      "realm_name": "金丹境",
+      "realm_name_en": "Golden Core Realm",
+      "realm_order": 3,
+      "description": "築基完成後，修士將全身靈力凝練成金丹，金丹一成，神識大增，可遨遊九天。金丹修士已是一方強者，可開宗立派。",
+      "max_hp": 800,
+      "max_mp": 400,
+      "attack": 100,
+      "defense": 60,
+      "spirit": 150,
+      "stages": [
+        {
+          "stage_name": "初期",
+          "stage_name_en": "Early Stage",
+          "stage_order": 1,
+          "is_extreme": false,
+          "exp_required": 150000,
+          "stat_multiplier": 1.0,
+          "stat_bonus": {
+            "spirit": 30,
+            "max_hp": 100,
+            "attack": 20
+          }
+        },
+        {
+          "stage_name": "中期",
+          "stage_name_en": "Middle Stage",
+          "stage_order": 2,
+          "is_extreme": false,
+          "exp_required": 300000,
+          "stat_multiplier": 1.4,
+          "stat_bonus": {
+            "spirit": 60,
+            "max_mp": 100,
+            "attack": 40,
+            "defense": 30
+          }
+        },
+        {
+          "stage_name": "後期",
+          "stage_name_en": "Late Stage",
+          "stage_order": 3,
+          "is_extreme": false,
+          "exp_required": 600000,
+          "stat_multiplier": 1.8,
+          "stat_bonus": {
+            "spirit": 100,
+            "max_mp": 180,
+            "attack": 60,
+            "defense": 50,
+            "max_hp": 200
+          }
+        },
+        {
+          "stage_name": "巔峰",
+          "stage_name_en": "Peak Stage",
+          "stage_order": 4,
+          "is_extreme": false,
+          "exp_required": 1000000,
+          "stat_multiplier": 2.3,
+          "stat_bonus": {
+            "spirit": 150,
+            "max_mp": 280,
+            "attack": 100,
+            "defense": 80,
+            "max_hp": 350,
+            "crit_damage": 20
+          }
+        },
+        {
+          "stage_name": "極境",
+          "stage_name_en": "Extreme Stage",
+          "stage_order": 5,
+          "is_extreme": true,
+          "exp_required": 1800000,
+          "stat_multiplier": 3.5,
+          "stat_bonus": {
+            "spirit": 300,
+            "max_mp": 500,
+            "attack": 200,
+            "defense": 150,
+            "max_hp": 600,
+            "crit_rate": 12,
+            "crit_damage": 40,
+            "dodge": 10
+          }
+        }
+      ],
+      "breakthrough_requirements": [
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 301,
+                "item_name": "破嬰丹",
+                "quantity": 1
+              },
+              {
+                "item_id": 302,
+                "item_name": "元嬰靈草",
+                "quantity": 5
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 800,
+            "level": 70
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 303,
+                "item_name": "金丹極境石",
+                "quantity": 20
+              },
+              {
+                "item_id": 304,
+                "item_name": "九轉金丹精華",
+                "quantity": 10
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "quest",
+          "requirement_data": {
+            "quest_id": 3001,
+            "quest_name": "金丹極境試煉",
+            "description": "煉化天地異火淬煉金丹"
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 1000,
+            "breakthrough_success_rate": 20
+          }
+        }
+      ],
+      "skill_unlocks": [
+        {
+          "stage_name": "初期",
+          "skill_id": 21,
+          "skill_name": "金丹神識",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "skill_id": 22,
+          "skill_name": "九天御劍",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "skill_id": 23,
+          "skill_name": "金丹天罡",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "skill_id": 24,
+          "skill_name": "金丹自爆",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "skill_id": 25,
+          "skill_name": "金丹極境·無上神通",
+          "is_extreme_only": true
+        }
+      ],
+      "equipment_unlocks": [
+        {
+          "stage_name": "初期",
+          "min_level": 50,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "min_level": 60,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "min_level": 70,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "min_level": 80,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "min_level": 90,
+          "is_extreme_only": true
+        }
+      ]
+    },
+    {
+      "realm_name": "元嬰境",
+      "realm_name_en": "Nascent Soul Realm",
+      "realm_order": 4,
+      "description": "金丹破碎，元嬰而生。元嬰修士已脫離凡胎，神識可離體千里，壽命可達千年。即使肉身毀滅，元嬰亦可奪舍重生。",
+      "max_hp": 2000,
+      "max_mp": 1000,
+      "attack": 250,
+      "defense": 150,
+      "spirit": 400,
+      "stages": [
+        {
+          "stage_name": "初期",
+          "stage_name_en": "Early Stage",
+          "stage_order": 1,
+          "is_extreme": false,
+          "exp_required": 1500000,
+          "stat_multiplier": 1.0,
+          "stat_bonus": {
+            "spirit": 80,
+            "max_hp": 300,
+            "attack": 50,
+            "max_mp": 200
+          }
+        },
+        {
+          "stage_name": "中期",
+          "stage_name_en": "Middle Stage",
+          "stage_order": 2,
+          "is_extreme": false,
+          "exp_required": 3000000,
+          "stat_multiplier": 1.5,
+          "stat_bonus": {
+            "spirit": 160,
+            "max_mp": 350,
+            "attack": 100,
+            "defense": 80,
+            "max_hp": 500
+          }
+        },
+        {
+          "stage_name": "後期",
+          "stage_name_en": "Late Stage",
+          "stage_order": 3,
+          "is_extreme": false,
+          "exp_required": 6000000,
+          "stat_multiplier": 2.0,
+          "stat_bonus": {
+            "spirit": 250,
+            "max_mp": 550,
+            "attack": 180,
+            "defense": 130,
+            "max_hp": 800,
+            "crit_damage": 30
+          }
+        },
+        {
+          "stage_name": "巔峰",
+          "stage_name_en": "Peak Stage",
+          "stage_order": 4,
+          "is_extreme": false,
+          "exp_required": 10000000,
+          "stat_multiplier": 2.6,
+          "stat_bonus": {
+            "spirit": 400,
+            "max_mp": 800,
+            "attack": 280,
+            "defense": 200,
+            "max_hp": 1200,
+            "crit_rate": 10,
+            "crit_damage": 50
+          }
+        },
+        {
+          "stage_name": "極境",
+          "stage_name_en": "Extreme Stage",
+          "stage_order": 5,
+          "is_extreme": true,
+          "exp_required": 18000000,
+          "stat_multiplier": 4.0,
+          "stat_bonus": {
+            "spirit": 800,
+            "max_mp": 1500,
+            "attack": 500,
+            "defense": 350,
+            "max_hp": 2000,
+            "crit_rate": 18,
+            "crit_damage": 80,
+            "dodge": 15,
+            "lifesteal": 10
+          }
+        }
+      ],
+      "breakthrough_requirements": [
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 401,
+                "item_name": "化神丹",
+                "quantity": 1
+              },
+              {
+                "item_id": 402,
+                "item_name": "化神聖物",
+                "quantity": 10
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 2000,
+            "level": 100
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 403,
+                "item_name": "元嬰極境石",
+                "quantity": 50
+              },
+              {
+                "item_id": 404,
+                "item_name": "元嬰本源",
+                "quantity": 20
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "quest",
+          "requirement_data": {
+            "quest_id": 4001,
+            "quest_name": "元嬰極境試煉",
+            "description": "渡過九重天劫不死"
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 2500,
+            "breakthrough_success_rate": 15
+          }
+        }
+      ],
+      "skill_unlocks": [
+        {
+          "stage_name": "初期",
+          "skill_id": 31,
+          "skill_name": "元嬰出竅",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "skill_id": 32,
+          "skill_name": "神識化劍",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "skill_id": 33,
+          "skill_name": "天地大挪移",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "skill_id": 34,
+          "skill_name": "毀天滅地",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "skill_id": 35,
+          "skill_name": "元嬰極境·涅槃重生",
+          "is_extreme_only": true
+        }
+      ],
+      "equipment_unlocks": [
+        {
+          "stage_name": "初期",
+          "min_level": 95,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "min_level": 105,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "min_level": 115,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "min_level": 125,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "min_level": 135,
+          "is_extreme_only": true
+        }
+      ]
+    },
+    {
+      "realm_name": "化神境",
+      "realm_name_en": "Spirit Transformation Realm",
+      "realm_order": 5,
+      "description": "元嬰化神，修士已可感悟天地大道，掌握法則之力。化神修士可移山填海，摘星拿月，已是凡間無敵的存在，可稱之為陸地神仙。",
+      "max_hp": 5000,
+      "max_mp": 2500,
+      "attack": 600,
+      "defense": 400,
+      "spirit": 1000,
+      "stages": [
+        {
+          "stage_name": "初期",
+          "stage_name_en": "Early Stage",
+          "stage_order": 1,
+          "is_extreme": false,
+          "exp_required": 15000000,
+          "stat_multiplier": 1.0,
+          "stat_bonus": {
+            "spirit": 200,
+            "max_hp": 800,
+            "attack": 120,
+            "max_mp": 500,
+            "defense": 100
+          }
+        },
+        {
+          "stage_name": "中期",
+          "stage_name_en": "Middle Stage",
+          "stage_order": 2,
+          "is_extreme": false,
+          "exp_required": 30000000,
+          "stat_multiplier": 1.6,
+          "stat_bonus": {
+            "spirit": 400,
+            "max_mp": 900,
+            "attack": 250,
+            "defense": 200,
+            "max_hp": 1500,
+            "crit_damage": 40
+          }
+        },
+        {
+          "stage_name": "後期",
+          "stage_name_en": "Late Stage",
+          "stage_order": 3,
+          "is_extreme": false,
+          "exp_required": 60000000,
+          "stat_multiplier": 2.2,
+          "stat_bonus": {
+            "spirit": 650,
+            "max_mp": 1400,
+            "attack": 400,
+            "defense": 320,
+            "max_hp": 2300,
+            "crit_rate": 12,
+            "crit_damage": 60
+          }
+        },
+        {
+          "stage_name": "巔峰",
+          "stage_name_en": "Peak Stage",
+          "stage_order": 4,
+          "is_extreme": false,
+          "exp_required": 100000000,
+          "stat_multiplier": 3.0,
+          "stat_bonus": {
+            "spirit": 1000,
+            "max_mp": 2000,
+            "attack": 600,
+            "defense": 500,
+            "max_hp": 3500,
+            "crit_rate": 15,
+            "crit_damage": 100,
+            "dodge": 12
+          }
+        },
+        {
+          "stage_name": "極境",
+          "stage_name_en": "Extreme Stage",
+          "stage_order": 5,
+          "is_extreme": true,
+          "exp_required": 180000000,
+          "stat_multiplier": 5.0,
+          "stat_bonus": {
+            "spirit": 2000,
+            "max_mp": 3500,
+            "attack": 1200,
+            "defense": 900,
+            "max_hp": 6000,
+            "crit_rate": 25,
+            "crit_damage": 150,
+            "dodge": 20,
+            "lifesteal": 20,
+            "dmg_reduction": 15
+          }
+        }
+      ],
+      "breakthrough_requirements": [
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 501,
+                "item_name": "飛升仙丹",
+                "quantity": 1
+              },
+              {
+                "item_id": 502,
+                "item_name": "天外仙材",
+                "quantity": 30
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_next_realm",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 5000,
+            "level": 150
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "material",
+          "requirement_data": {
+            "items": [
+              {
+                "item_id": 503,
+                "item_name": "化神極境石",
+                "quantity": 100
+              },
+              {
+                "item_id": 504,
+                "item_name": "神魂本源",
+                "quantity": 50
+              },
+              {
+                "item_id": 505,
+                "item_name": "天道碎片",
+                "quantity": 10
+              }
+            ]
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "quest",
+          "requirement_data": {
+            "quest_id": 5001,
+            "quest_name": "化神極境試煉",
+            "description": "領悟天地法則，感悟大道真意"
+          }
+        },
+        {
+          "breakthrough_type": "peak_to_extreme",
+          "requirement_type": "stat",
+          "requirement_data": {
+            "spirit": 6000,
+            "breakthrough_success_rate": 10
+          }
+        }
+      ],
+      "skill_unlocks": [
+        {
+          "stage_name": "初期",
+          "skill_id": 41,
+          "skill_name": "法則之力",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "skill_id": 42,
+          "skill_name": "領域展開",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "skill_id": 43,
+          "skill_name": "神魂滅殺",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "skill_id": 44,
+          "skill_name": "天地同壽",
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "skill_id": 45,
+          "skill_name": "化神極境·逆天改命",
+          "is_extreme_only": true
+        }
+      ],
+      "equipment_unlocks": [
+        {
+          "stage_name": "初期",
+          "min_level": 140,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "中期",
+          "min_level": 155,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "後期",
+          "min_level": 170,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "巔峰",
+          "min_level": 185,
+          "is_extreme_only": false
+        },
+        {
+          "stage_name": "極境",
+          "min_level": 200,
+          "is_extreme_only": true
+        }
+      ]
+    }
+  ]
+}
