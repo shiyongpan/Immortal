@@ -14,7 +14,7 @@ class AuthController {
       // 1. 驗證輸入
       if (!username || !email || !password) {
         return res.status(400).json({
-          error: "用戶名、郵箱和密碼為sda必填項",
+          error: "用戶名、郵箱和密碼為必填項",
         });
       }
 

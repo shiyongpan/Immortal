@@ -58,19 +58,6 @@ CREATE TABLE IF NOT EXISTS equipment_unlocks (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 创建玩家境界表
-CREATE TABLE IF NOT EXISTS player_realms (
-    id SERIAL PRIMARY KEY,
-    player_id INTEGER NOT NULL,
-    current_realm_id INTEGER REFERENCES realms(id),
-    current_stage_id INTEGER REFERENCES realm_stages(id),
-    current_exp INTEGER DEFAULT 0,
-    breakthrough_attempts INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- 创建索引以提高查询性能
 CREATE INDEX IF NOT EXISTS idx_realm_stages_realm_id ON realm_stages(realm_id);
-CREATE INDEX IF NOT EXISTS idx_player_realms_player_id ON player_realms(player_id);
 CREATE INDEX IF NOT EXISTS idx_breakthrough_requirements_realm_id ON breakthrough_requirements(realm_id);

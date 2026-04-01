@@ -20,7 +20,7 @@ async function setupPlayerTables() {
 
     try {
         // 讀取 SQL 檔案
-        const sql = fs.readFileSync('./create_player_tables.sql', 'utf8');
+        const sql = fs.readFileSync('./sql/create_player_tables.sql', 'utf8');
 
         // 執行 SQL
         await pool.query(sql);

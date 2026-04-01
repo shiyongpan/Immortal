@@ -120,8 +120,8 @@ COMMENT ON COLUMN player_currencies.honor_points IS '榮譽點 (競技場貨幣)
 CREATE TABLE IF NOT EXISTS player_realms (
     id SERIAL PRIMARY KEY,
     player_id INT UNIQUE REFERENCES players(id) ON DELETE CASCADE,
-    current_realm_id INT DEFAULT 1,
-    current_stage_id INT DEFAULT 1,
+    current_realm_id INT REFERENCES realms(id),
+    current_stage_id INT REFERENCES realm_stages(id),
     current_exp BIGINT DEFAULT 0 CHECK (current_exp >= 0),
 
     -- 突破統計
@@ -137,6 +137,23 @@ CREATE TABLE IF NOT EXISTS player_realms (
 CREATE INDEX IF NOT EXISTS idx_player_realms_player_id ON player_realms(player_id);
 
 COMMENT ON TABLE player_realms IS '玩家當前境界';
+
+-- ============================================
+-- 4b. 玩家境界突破歷史表
+-- ============================================
+CREATE TABLE IF NOT EXISTS player_realm_history (
+    id SERIAL PRIMARY KEY,
+    player_id INT REFERENCES players(id) ON DELETE CASCADE,
+    from_stage_id INT REFERENCES realm_stages(id),
+    to_stage_id INT REFERENCES realm_stages(id),
+    success BOOLEAN NOT NULL,
+    is_extreme BOOLEAN DEFAULT FALSE,
+    breakthrough_time TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_realm_history_player ON player_realm_history(player_id);
+
+COMMENT ON TABLE player_realm_history IS '玩家境界突破歷史記錄';
 COMMENT ON COLUMN player_realms.current_realm_id IS '當前境界 ID';
 COMMENT ON COLUMN player_realms.current_stage_id IS '當前境界階段 ID';
 
@@ -235,11 +252,16 @@ AFTER INSERT ON players
 FOR EACH ROW
 EXECUTE FUNCTION create_player_currencies();
 
--- 觸發器 3: 自動創建玩家境界記錄
+-- 觸發器 3: 自動創建玩家境界記錄 (初始為煉氣境初期)
 CREATE OR REPLACE FUNCTION create_player_realms()
 RETURNS TRIGGER AS $$
+DECLARE
+    v_realm_id INT;
+    v_stage_id INT;
 BEGIN
-    INSERT INTO player_realms (player_id) VALUES (NEW.id);
+    SELECT id INTO v_realm_id FROM realms WHERE realm_order = 1 LIMIT 1;
+    SELECT id INTO v_stage_id FROM realm_stages WHERE realm_id = v_realm_id AND stage_order = 1 LIMIT 1;
+    INSERT INTO player_realms (player_id, current_realm_id, current_stage_id) VALUES (NEW.id, v_realm_id, v_stage_id);
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
