@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const pool = require("../config/database");
 
 class SkillController {
@@ -28,7 +29,7 @@ class SkillController {
       );
       res.json({ skills: result.rows });
     } catch (error) {
-      console.error("獲取技能列表錯誤:", error);
+      logger.error("獲取技能列表錯誤:", error);
       res.status(500).json({ error: "獲取技能列表失敗" });
     }
   }
@@ -53,7 +54,7 @@ class SkillController {
       );
       res.json({ skills: result.rows });
     } catch (error) {
-      console.error("獲取玩家技能錯誤:", error);
+      logger.error("獲取玩家技能錯誤:", error);
       res.status(500).json({ error: "獲取玩家技能失敗" });
     }
   }
@@ -121,7 +122,7 @@ class SkillController {
       res.status(201).json({ message: "技能學習成功", skillName: skill.skill_name });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("學習技能錯誤:", error);
+      logger.error("學習技能錯誤:", error);
       res.status(500).json({ error: "學習技能失敗" });
     } finally {
       client.release();
@@ -192,7 +193,7 @@ class SkillController {
       res.json({ message: "技能升級成功", newLevel: nextLevel, spiritStonesUsed: cost.toString() });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("技能升級錯誤:", error);
+      logger.error("技能升級錯誤:", error);
       res.status(500).json({ error: "技能升級失敗" });
     } finally {
       client.release();
@@ -233,7 +234,7 @@ class SkillController {
 
       res.json({ message: "技能欄位設置成功", slotIndex });
     } catch (error) {
-      console.error("設置技能欄錯誤:", error);
+      logger.error("設置技能欄錯誤:", error);
       res.status(500).json({ error: "設置技能欄失敗" });
     }
   }

@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const pool = require("../config/database");
 
 class ShopController {
@@ -11,7 +12,7 @@ class ShopController {
       );
       res.json({ shops: result.rows });
     } catch (error) {
-      console.error("獲取商城列表錯誤:", error);
+      logger.error("獲取商城列表錯誤:", error);
       res.status(500).json({ error: "獲取商城列表失敗" });
     }
   }
@@ -55,7 +56,7 @@ class ShopController {
 
       res.json({ items: result.rows });
     } catch (error) {
-      console.error("獲取商城物品錯誤:", error);
+      logger.error("獲取商城物品錯誤:", error);
       res.status(500).json({ error: "獲取商城物品失敗" });
     }
   }
@@ -191,7 +192,7 @@ class ShopController {
       });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("購買物品錯誤:", error);
+      logger.error("購買物品錯誤:", error);
       res.status(500).json({ error: "購買失敗" });
     } finally {
       client.release();
@@ -273,7 +274,7 @@ class ShopController {
       });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("出售物品錯誤:", error);
+      logger.error("出售物品錯誤:", error);
       res.status(500).json({ error: "出售失敗" });
     } finally {
       client.release();
@@ -293,7 +294,7 @@ class ShopController {
       );
       res.json({ transactions: result.rows });
     } catch (error) {
-      console.error("獲取交易記錄錯誤:", error);
+      logger.error("獲取交易記錄錯誤:", error);
       res.status(500).json({ error: "獲取交易記錄失敗" });
     }
   }

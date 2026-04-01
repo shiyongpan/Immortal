@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const pool = require("../config/database");
 
 class QuestController {
@@ -43,7 +44,7 @@ class QuestController {
 
       res.json({ quests: result.rows });
     } catch (error) {
-      console.error("獲取可用任務錯誤:", error);
+      logger.error("獲取可用任務錯誤:", error);
       res.status(500).json({ error: "獲取可用任務失敗" });
     }
   }
@@ -71,7 +72,7 @@ class QuestController {
       );
       res.json({ quests: result.rows });
     } catch (error) {
-      console.error("獲取玩家任務錯誤:", error);
+      logger.error("獲取玩家任務錯誤:", error);
       res.status(500).json({ error: "獲取玩家任務失敗" });
     }
   }
@@ -138,7 +139,7 @@ class QuestController {
       res.status(201).json({ message: "任務接取成功", questName: quest.quest_name });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("接取任務錯誤:", error);
+      logger.error("接取任務錯誤:", error);
       res.status(500).json({ error: "接取任務失敗" });
     } finally {
       client.release();
@@ -189,7 +190,7 @@ class QuestController {
         stepCompleted: stepDone,
       });
     } catch (error) {
-      console.error("更新任務進度錯誤:", error);
+      logger.error("更新任務進度錯誤:", error);
       res.status(500).json({ error: "更新任務進度失敗" });
     }
   }
@@ -282,7 +283,7 @@ class QuestController {
       res.json({ message: "任務完成！", rewards: rewardsGiven });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("完成任務錯誤:", error);
+      logger.error("完成任務錯誤:", error);
       res.status(500).json({ error: "完成任務失敗" });
     } finally {
       client.release();
@@ -310,7 +311,7 @@ class QuestController {
       }
       res.json({ message: "任務已放棄" });
     } catch (error) {
-      console.error("放棄任務錯誤:", error);
+      logger.error("放棄任務錯誤:", error);
       res.status(500).json({ error: "放棄任務失敗" });
     }
   }

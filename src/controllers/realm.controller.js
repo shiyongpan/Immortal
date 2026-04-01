@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const pool = require("../config/database");
 
 class RealmController {
@@ -27,7 +28,7 @@ class RealmController {
       );
       res.json({ realms: result.rows });
     } catch (error) {
-      console.error("獲取境界資料錯誤:", error);
+      logger.error("獲取境界資料錯誤:", error);
       res.status(500).json({ error: "獲取境界資料失敗" });
     }
   }
@@ -53,7 +54,7 @@ class RealmController {
       }
       res.json({ realm: result.rows[0] });
     } catch (error) {
-      console.error("獲取玩家境界錯誤:", error);
+      logger.error("獲取玩家境界錯誤:", error);
       res.status(500).json({ error: "獲取玩家境界失敗" });
     }
   }
@@ -98,7 +99,7 @@ class RealmController {
         canBreakthrough,
       });
     } catch (error) {
-      console.error("增加境界經驗錯誤:", error);
+      logger.error("增加境界經驗錯誤:", error);
       res.status(500).json({ error: "增加境界經驗失敗" });
     }
   }
@@ -261,7 +262,7 @@ class RealmController {
       });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("境界突破錯誤:", error);
+      logger.error("境界突破錯誤:", error);
       res.status(500).json({ error: "突破處理失敗" });
     } finally {
       client.release();
@@ -288,7 +289,7 @@ class RealmController {
       );
       res.json({ history: result.rows });
     } catch (error) {
-      console.error("獲取突破歷史錯誤:", error);
+      logger.error("獲取突破歷史錯誤:", error);
       res.status(500).json({ error: "獲取突破歷史失敗" });
     }
   }
@@ -330,7 +331,7 @@ class RealmController {
 
       res.json({ requirements: reqResult.rows });
     } catch (error) {
-      console.error("獲取突破需求錯誤:", error);
+      logger.error("獲取突破需求錯誤:", error);
       res.status(500).json({ error: "獲取突破需求失敗" });
     }
   }

@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../config/database");
+const logger = require("../utils/logger");
 require("dotenv").config();
 
 class AuthController {
@@ -64,7 +65,7 @@ class AuthController {
         },
       });
     } catch (error) {
-      console.error("註冊錯誤:", error);
+      logger.error("註冊錯誤:", error);
       res.status(500).json({ error: "註冊失敗,請稍後重試" });
     }
   }
@@ -132,7 +133,7 @@ class AuthController {
         },
       });
     } catch (error) {
-      console.error("登入錯誤:", error);
+      logger.error("登入錯誤:", error);
       res.status(500).json({ error: "登入失敗,請稍後重試" });
     }
   }
@@ -180,7 +181,7 @@ class AuthController {
 
       res.json({ player: result.rows[0] });
     } catch (error) {
-      console.error("獲取玩家資料錯誤:", error);
+      logger.error("獲取玩家資料錯誤:", error);
       res.status(500).json({ error: "獲取資料失敗" });
     }
   }

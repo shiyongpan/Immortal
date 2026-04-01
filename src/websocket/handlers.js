@@ -1,5 +1,6 @@
 const pool = require("../config/database");
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
 
 // 在線玩家 Map: playerId -> WebSocket
 const onlinePlayers = new Map();
@@ -22,7 +23,7 @@ function sendToPlayer(playerId, data) {
 
 function setupWebSocket(wss) {
   wss.on("connection", (ws, req) => {
-    console.log("✅ 新 WebSocket 連接");
+    logger.info("✅ 新 WebSocket 連接");
 
     ws.send(JSON.stringify({
       type: "WELCOME",
@@ -74,7 +75,7 @@ function setupWebSocket(wss) {
             ws.send(JSON.stringify({ type: "ERROR", error: `未知訊息類型: ${data.type}` }));
         }
       } catch (error) {
-        console.error("WebSocket 處理錯誤:", error);
+        logger.error("WebSocket 處理錯誤:", error);
         ws.send(JSON.stringify({ type: "ERROR", error: "伺服器處理錯誤" }));
       }
     });
@@ -87,12 +88,12 @@ function setupWebSocket(wss) {
           playerId: ws.playerId,
           onlineCount: onlinePlayers.size,
         });
-        console.log(`❌ 玩家 ${ws.playerId} 斷線，在線人數: ${onlinePlayers.size}`);
+        logger.info(`❌ 玩家 ${ws.playerId} 斷線，在線人數: ${onlinePlayers.size}`);
       }
     });
 
     ws.on("error", (err) => {
-      console.error("WebSocket 錯誤:", err.message);
+      logger.error("WebSocket 錯誤:", err.message);
     });
   });
 }
@@ -125,7 +126,7 @@ async function handleAuth(ws, data) {
       onlineCount: onlinePlayers.size,
     }, decoded.playerId);
 
-    console.log(`✅ 玩家 ${decoded.username}(${decoded.playerId}) 上線，在線人數: ${onlinePlayers.size}`);
+    logger.info(`✅ 玩家 ${decoded.username}(${decoded.playerId}) 上線，在線人數: ${onlinePlayers.size}`);
   } catch {
     ws.send(JSON.stringify({ type: "AUTH_FAILED", error: "Token 無效或已過期" }));
   }
@@ -264,7 +265,7 @@ async function handleBreakthrough(ws, data) {
     }
   } catch (error) {
     await client.query("ROLLBACK");
-    console.error("WS 突破錯誤:", error);
+    logger.error("WS 突破錯誤:", error);
     ws.send(JSON.stringify({ type: "ERROR", error: "突破處理失敗" }));
   } finally {
     client.release();

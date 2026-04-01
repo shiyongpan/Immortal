@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const pool = require("../config/database");
 
 class LeaderboardController {
@@ -63,7 +64,7 @@ class LeaderboardController {
       const result = await pool.query(query, [limit]);
       res.json({ type, leaderboard: result.rows });
     } catch (error) {
-      console.error("獲取排行榜錯誤:", error);
+      logger.error("獲取排行榜錯誤:", error);
       res.status(500).json({ error: "獲取排行榜失敗" });
     }
   }
@@ -109,7 +110,7 @@ class LeaderboardController {
       const result = await pool.query(query, [playerId]);
       res.json({ type, rank: parseInt(result.rows[0].rank) });
     } catch (error) {
-      console.error("獲取玩家排名錯誤:", error);
+      logger.error("獲取玩家排名錯誤:", error);
       res.status(500).json({ error: "獲取玩家排名失敗" });
     }
   }

@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const pool = require("../config/database");
 
 class InventoryController {
@@ -23,7 +24,7 @@ class InventoryController {
       );
       res.json({ items: result.rows, count: result.rows.length });
     } catch (error) {
-      console.error("獲取背包錯誤:", error);
+      logger.error("獲取背包錯誤:", error);
       res.status(500).json({ error: "獲取背包失敗" });
     }
   }
@@ -57,7 +58,7 @@ class InventoryController {
       }
       res.json({ equipment: result.rows[0] });
     } catch (error) {
-      console.error("獲取裝備欄錯誤:", error);
+      logger.error("獲取裝備欄錯誤:", error);
       res.status(500).json({ error: "獲取裝備欄失敗" });
     }
   }
@@ -153,7 +154,7 @@ class InventoryController {
       });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("使用物品錯誤:", error);
+      logger.error("使用物品錯誤:", error);
       res.status(500).json({ error: "使用物品失敗" });
     } finally {
       client.release();
@@ -227,7 +228,7 @@ class InventoryController {
       res.json({ message: "裝備成功", slot: equip.slot });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("裝備物品錯誤:", error);
+      logger.error("裝備物品錯誤:", error);
       res.status(500).json({ error: "裝備失敗" });
     } finally {
       client.release();
@@ -295,7 +296,7 @@ class InventoryController {
       res.json({ message: "卸下裝備成功", slot });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("卸下裝備錯誤:", error);
+      logger.error("卸下裝備錯誤:", error);
       res.status(500).json({ error: "卸下裝備失敗" });
     } finally {
       client.release();
@@ -343,7 +344,7 @@ class InventoryController {
 
       res.json({ message: "丟棄成功", discarded: dropQty });
     } catch (error) {
-      console.error("丟棄物品錯誤:", error);
+      logger.error("丟棄物品錯誤:", error);
       res.status(500).json({ error: "丟棄物品失敗" });
     }
   }
@@ -366,7 +367,7 @@ class InventoryController {
       const result = await pool.query(query, values);
       res.json({ items: result.rows });
     } catch (error) {
-      console.error("獲取物品列表錯誤:", error);
+      logger.error("獲取物品列表錯誤:", error);
       res.status(500).json({ error: "獲取物品列表失敗" });
     }
   }

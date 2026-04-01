@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const pool = require("../config/database");
 
 // 傷害計算
@@ -31,7 +32,7 @@ class BattleController {
       );
       res.json({ monsters: result.rows });
     } catch (error) {
-      console.error("獲取怪物列表錯誤:", error);
+      logger.error("獲取怪物列表錯誤:", error);
       res.status(500).json({ error: "獲取怪物列表失敗" });
     }
   }
@@ -206,7 +207,7 @@ class BattleController {
       });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("戰鬥錯誤:", error);
+      logger.error("戰鬥錯誤:", error);
       res.status(500).json({ error: "戰鬥處理失敗" });
     } finally {
       client.release();
@@ -229,7 +230,7 @@ class BattleController {
       );
       res.json({ logs: result.rows });
     } catch (error) {
-      console.error("獲取戰鬥記錄錯誤:", error);
+      logger.error("獲取戰鬥記錄錯誤:", error);
       res.status(500).json({ error: "獲取戰鬥記錄失敗" });
     }
   }
@@ -280,7 +281,7 @@ class BattleController {
       res.json({ message: "HP 回復完成", spiritStonesUsed: cost });
     } catch (error) {
       await client.query("ROLLBACK");
-      console.error("回復 HP 錯誤:", error);
+      logger.error("回復 HP 錯誤:", error);
       res.status(500).json({ error: "回復 HP 失敗" });
     } finally {
       client.release();
