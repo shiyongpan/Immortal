@@ -1,14 +1,15 @@
+require("dotenv").config();
 const { Pool } = require("pg");
 const fs = require("fs");
 const path = require("path");
 
-// PostgreSQL 连接池
+// PostgreSQL 連接池
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "IMMORTAL",
-  password: "IMMORTAL",
-  port: 5432,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
 });
 
 async function importRealmData() {

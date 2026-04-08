@@ -27,3 +27,4 @@ coverage/
 # 建置輸出
 dist/
 build/
+logs/

@@ -2,16 +2,18 @@ const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/auth.controller");
 const { authenticateToken } = require("../middleware/auth.middleware");
+const validate = require("../middleware/validate.middleware");
+const { registerSchema, loginSchema } = require("../validators/auth.validator");
 
 /**
  * 身份驗證路由
  */
 
 // 註冊新玩家
-router.post("/register", authController.register);
+router.post("/register", validate(registerSchema), authController.register);
 
 // 玩家登入
-router.post("/login", authController.login);
+router.post("/login", validate(loginSchema), authController.login);
 
 // 驗證 Token (需要認證)
 router.get("/verify", authenticateToken, authController.verify);

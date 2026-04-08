@@ -1,5 +1,6 @@
 const { Pool } = require("pg");
 require("dotenv").config();
+const logger = require("../utils/logger");
 
 // PostgreSQL 連接池
 const pool = new Pool({
@@ -12,11 +13,11 @@ const pool = new Pool({
 
 // 測試資料庫連接
 pool.on("connect", () => {
-  console.log("✅ 資料庫連接池建立成功");
+  logger.info("✅ 資料庫連接池建立成功");
 });
 
 pool.on("error", (err) => {
-  console.error("❌ 資料庫連接錯誤:", err);
+  logger.error("❌ 資料庫連接錯誤:", err);
   process.exit(-1);
 });
 
