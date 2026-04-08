@@ -9,6 +9,8 @@ const addExpSchema = Joi.object({
 
 const breakthroughSchema = Joi.object({
   useItem: Joi.boolean().default(false),
+  skipExtreme: Joi.boolean().default(false),
+  useExtremeStone: Joi.boolean().default(false),
 });
 
 module.exports = { addExpSchema, breakthroughSchema };

@@ -1,5 +1,6 @@
 const logger = require("../utils/logger");
 const pool = require("../config/database");
+const { updateQuestProgress } = require("../utils/questProgress");
 
 class ShopController {
   /**
@@ -159,6 +160,9 @@ class ShopController {
                  DO UPDATE SET quantity = player_inventory.quantity + EXCLUDED.quantity`,
         [playerId, shopItem.item_id, quantity],
       );
+
+      // ── 自動更新任務進度：collect 類型 ──
+      await updateQuestProgress(client, playerId, "collect", shopItem.item_id, quantity);
 
       // 記錄購買
       await client.query(

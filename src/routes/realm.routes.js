@@ -14,5 +14,6 @@ router.get("/player/history", authenticateToken, realmController.getBreakthrough
 router.get("/player/requirements", authenticateToken, realmController.getBreakthroughRequirements);
 router.post("/player/add-exp", authenticateToken, validate(addExpSchema), realmController.addExp);
 router.post("/player/breakthrough", authenticateToken, validate(breakthroughSchema), realmController.breakthrough);
+router.post("/player/cultivate", authenticateToken, realmController.cultivate);
 
 module.exports = router;

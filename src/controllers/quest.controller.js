@@ -26,18 +26,27 @@ class QuestController {
                     r.realm_name as realm_required_name,
                     pq.status as player_status,
                     pq.current_step,
-                    COALESCE(
-                        json_agg(qr ORDER BY qr.id) FILTER (WHERE qr.id IS NOT NULL), '[]'
-                    ) as rewards
+                    (SELECT json_agg(
+                       json_build_object(
+                         'id', qr.id, 'reward_type', qr.reward_type,
+                         'reward_value', qr.reward_value, 'item_id', qr.item_id,
+                         'item_quantity', qr.item_quantity,
+                         'item_name', i.item_name
+                       ) ORDER BY qr.id
+                     ) FROM quest_rewards qr LEFT JOIN items i ON qr.item_id = i.id WHERE qr.quest_id = q.id) as rewards,
+                    (SELECT COUNT(*) FROM quest_steps qs WHERE qs.quest_id = q.id) as total_steps
                  FROM quests q
                  LEFT JOIN realms r ON q.realm_required = r.id
                  LEFT JOIN player_quests pq ON q.id = pq.quest_id AND pq.player_id = $1
-                 LEFT JOIN quest_rewards qr ON q.id = qr.quest_id
                  WHERE q.is_active = true
                    AND q.level_required <= $2
                    AND (q.realm_required IS NULL OR q.realm_required <= $3)
-                   AND (pq.status IS NULL OR (q.is_repeatable = true AND pq.status = 'completed'))
-                 GROUP BY q.id, r.realm_name, pq.status, pq.current_step
+                   AND (
+                     pq.status IS NULL
+                     OR (q.is_repeatable = true AND pq.status = 'abandoned')
+                     OR (q.is_repeatable = true AND pq.status = 'completed'
+                         AND pq.completed_at + (q.repeat_cooldown_hours * INTERVAL '1 hour') <= NOW())
+                   )
                  ORDER BY q.quest_type, q.level_required`,
         [playerId, level, current_realm_id],
       );
@@ -59,14 +68,20 @@ class QuestController {
     try {
       const result = await pool.query(
         `SELECT pq.*, q.quest_name, q.description, q.quest_type,
-                    json_agg(DISTINCT qs ORDER BY qs.step_order) FILTER (WHERE qs.id IS NOT NULL) as steps,
-                    json_agg(DISTINCT qr ORDER BY qr.id) FILTER (WHERE qr.id IS NOT NULL) as rewards
+                    q.is_repeatable, q.repeat_cooldown_hours,
+                    (SELECT json_agg(qs ORDER BY qs.step_order) FROM quest_steps qs WHERE qs.quest_id = q.id) as steps,
+                    (SELECT COUNT(*) FROM quest_steps qs WHERE qs.quest_id = q.id) as total_steps,
+                    (SELECT json_agg(
+                       json_build_object(
+                         'id', qr.id, 'reward_type', qr.reward_type,
+                         'reward_value', qr.reward_value, 'item_id', qr.item_id,
+                         'item_quantity', qr.item_quantity,
+                         'item_name', i.item_name
+                       ) ORDER BY qr.id
+                     ) FROM quest_rewards qr LEFT JOIN items i ON qr.item_id = i.id WHERE qr.quest_id = q.id) as rewards
                  FROM player_quests pq
                  JOIN quests q ON pq.quest_id = q.id
-                 LEFT JOIN quest_steps qs ON q.id = qs.quest_id
-                 LEFT JOIN quest_rewards qr ON q.id = qr.quest_id
                  WHERE pq.player_id = $1 AND pq.status = $2
-                 GROUP BY pq.id, q.quest_name, q.description, q.quest_type
                  ORDER BY pq.started_at DESC`,
         [playerId, status],
       );
@@ -115,6 +130,20 @@ class QuestController {
         if (existStatus === "completed" && !quest.is_repeatable) {
           await client.query("ROLLBACK");
           return res.status(409).json({ error: "任務已完成且不可重複" });
+        }
+        // 冷卻中檢查
+        if (existStatus === "completed" && quest.is_repeatable && quest.repeat_cooldown_hours > 0) {
+          const cdResult = await client.query(
+            `SELECT completed_at + ($1 * INTERVAL '1 hour') > NOW() as in_cooldown,
+                    EXTRACT(EPOCH FROM (completed_at + ($1 * INTERVAL '1 hour') - NOW())) / 3600 as hours_left
+             FROM player_quests WHERE player_id = $2 AND quest_id = $3`,
+            [quest.repeat_cooldown_hours, playerId, questId],
+          );
+          if (cdResult.rows[0]?.in_cooldown) {
+            await client.query("ROLLBACK");
+            const h = Math.ceil(cdResult.rows[0].hours_left);
+            return res.status(409).json({ error: `任務冷卻中，還需等待 ${h} 小時` });
+          }
         }
         // 重置進度（重複任務）
         await client.query(
@@ -180,7 +209,7 @@ class QuestController {
       const stepDone = step && progress[key] >= step.required_count;
 
       await pool.query(
-        `UPDATE player_quests SET step_progress = $1, updated_at = NOW() WHERE player_id = $2 AND quest_id = $3`,
+        `UPDATE player_quests SET step_progress = $1 WHERE player_id = $2 AND quest_id = $3`,
         [JSON.stringify(progress), playerId, questId],
       );
 
@@ -253,7 +282,7 @@ class QuestController {
             [reward.reward_value, playerId],
           );
           rewardsGiven.push({ type: "exp", value: reward.reward_value.toString() });
-        } else if (["spirit_stones", "immortal_jade", "honor_points"].includes(reward.reward_type)) {
+        } else if (["spirit_stones", "immortal_jade", "honor_points", "contribution_points"].includes(reward.reward_type)) {
           const col = reward.reward_type;
           await client.query(
             `UPDATE player_currencies SET ${col} = ${col} + $1, updated_at = NOW() WHERE player_id = $2`,

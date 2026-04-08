@@ -1,5 +1,6 @@
 const logger = require("../utils/logger");
 const pool = require("../config/database");
+const { updateQuestProgress } = require("../utils/questProgress");
 
 // 傷害計算
 function calcDamage(attack, defense, critRate, critDamage) {
@@ -160,12 +161,29 @@ class BattleController {
           );
         }
 
+        // boss 怪物額外給予榮譽點數（10 + level/2）
+        if (monster.monster_type === "boss") {
+          const honorGained = Math.floor(10 + monster.level / 2);
+          await client.query(
+            `UPDATE player_currencies SET honor_points = honor_points + $1, updated_at = NOW() WHERE player_id = $2`,
+            [honorGained, playerId],
+          );
+        }
+
         // 更新戰鬥統計
         await client.query(
           `UPDATE player_stats SET total_battles = total_battles + 1, battles_won = battles_won + 1,
                      monsters_killed = monsters_killed + 1, updated_at = NOW() WHERE player_id = $1`,
           [playerId],
         );
+
+        // ── 自動更新任務進度 ──
+        // kill 類型：擊殺此怪物
+        await updateQuestProgress(client, playerId, "kill", monsterId, 1);
+        // collect 類型：掉落的物品
+        for (const drop of itemsDropped) {
+          await updateQuestProgress(client, playerId, "collect", drop.item_id, drop.quantity);
+        }
       } else {
         await client.query(
           `UPDATE player_stats SET total_battles = total_battles + 1, updated_at = NOW() WHERE player_id = $1`,
@@ -285,6 +303,119 @@ class BattleController {
       res.status(500).json({ error: "回復 HP 失敗" });
     } finally {
       client.release();
+    }
+  }
+  /**
+   * 提交動作戰鬥結果（不跑後端模擬，直接記錄）
+   */
+  async submitActionResult(req, res) {
+    const playerId = req.user.playerId;
+    const { monsterId, kills, expGained, stonesGained, finalHp, finalMp, isWin } = req.body;
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      // 驗證怪物存在
+      const monsterResult = await client.query("SELECT * FROM monsters WHERE id = $1", [monsterId]);
+      if (monsterResult.rows.length === 0) {
+        await client.query("ROLLBACK");
+        return res.status(404).json({ error: "怪物不存在" });
+      }
+      const monster = monsterResult.rows[0];
+
+      // 取得玩家目前 max_hp / max_mp
+      const statsResult = await client.query(
+        "SELECT max_hp, max_mp FROM player_stats WHERE player_id = $1", [playerId]
+      );
+      const { max_hp, max_mp } = statsResult.rows[0];
+      const safeHp = Math.max(1, Math.min(Number(finalHp) || 1, max_hp));
+      const safeMp = Math.max(0, Math.min(Number(finalMp) || 0, max_mp));
+
+      // 同步 HP / MP
+      await client.query(
+        "UPDATE player_stats SET current_hp = $1, current_mp = $2, updated_at = NOW() WHERE player_id = $3",
+        [safeHp, safeMp, playerId]
+      );
+
+      const result = isWin ? "win" : "lose";
+      const totalExp = Number(expGained) || 0;
+      const totalStones = Number(stonesGained) || 0;
+
+      if (isWin && totalExp > 0) {
+        // 增加境界經驗
+        await client.query(
+          "UPDATE player_realms SET current_exp = current_exp + $1, updated_at = NOW() WHERE player_id = $2",
+          [totalExp, playerId]
+        );
+      }
+      if (isWin && totalStones > 0) {
+        // 增加靈石
+        await client.query(
+          "UPDATE player_currencies SET spirit_stones = spirit_stones + $1, updated_at = NOW() WHERE player_id = $2",
+          [totalStones, playerId]
+        );
+      }
+
+      // 更新戰鬥統計
+      if (isWin) {
+        await client.query(
+          `UPDATE player_stats SET total_battles = total_battles + 1, battles_won = battles_won + 1,
+           monsters_killed = monsters_killed + $1, updated_at = NOW() WHERE player_id = $2`,
+          [Number(kills) || 1, playerId]
+        );
+        // ── 自動更新任務進度：kill 類型 ──
+        await updateQuestProgress(client, playerId, "kill", monsterId, Number(kills) || 1);
+      } else {
+        await client.query(
+          "UPDATE player_stats SET total_battles = total_battles + 1, updated_at = NOW() WHERE player_id = $1",
+          [playerId]
+        );
+      }
+
+      // 記錄戰鬥 log
+      await client.query(
+        `INSERT INTO battle_logs
+         (player_id, monster_id, monster_name, result, rounds, player_hp_remaining,
+          damage_dealt, damage_taken, exp_gained, spirit_stones_gained, items_dropped, battle_detail)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+        [playerId, monsterId, monster.monster_name, result,
+         Number(kills) || 1, safeHp, 0, 0,
+         totalExp, totalStones, JSON.stringify([]), JSON.stringify([])]
+      );
+
+      await client.query("COMMIT");
+      res.json({ result, expGained: totalExp, spiritStonesGained: totalStones, finalHp: safeHp, finalMp: safeMp });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      logger.error("提交動作戰結果錯誤:", error);
+      res.status(500).json({ error: "提交動作戰結果失敗" });
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * 同步動作戰鬥後的 HP/MP（不扣靈石）
+   */
+  async syncHp(req, res) {
+    const playerId = req.user.playerId;
+    const { currentHp, currentMp } = req.body;
+    try {
+      const statsResult = await pool.query(
+        "SELECT max_hp, max_mp FROM player_stats WHERE player_id = $1",
+        [playerId],
+      );
+      const { max_hp, max_mp } = statsResult.rows[0];
+      const safeHp = Math.max(0, Math.min(Number(currentHp) || 0, max_hp));
+      const safeMp = Math.max(0, Math.min(Number(currentMp) || 0, max_mp));
+      await pool.query(
+        "UPDATE player_stats SET current_hp = $1, current_mp = $2, updated_at = NOW() WHERE player_id = $3",
+        [safeHp, safeMp, playerId],
+      );
+      res.json({ currentHp: safeHp, currentMp: safeMp });
+    } catch (error) {
+      logger.error("同步 HP 錯誤:", error);
+      res.status(500).json({ error: "同步 HP 失敗" });
     }
   }
 }

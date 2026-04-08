@@ -109,10 +109,26 @@ class AuthController {
         return res.status(401).json({ error: "用戶名或密碼錯誤" });
       }
 
-      // 4. 更新最後登入時間
-      await pool.query("UPDATE players SET last_login = NOW() WHERE id = $1", [
-        player.id,
-      ]);
+      // 4. 更新最後登入時間 + 每日登入獎勵
+      const lastLoginResult = await pool.query(
+        "SELECT last_login FROM players WHERE id = $1",
+        [player.id],
+      );
+      await pool.query("UPDATE players SET last_login = NOW() WHERE id = $1", [player.id]);
+
+      // 每日登入獎勵：距上次登入超過 20 小時，贈送 5 仙玉
+      let dailyBonus = null;
+      const lastLogin = lastLoginResult.rows[0]?.last_login;
+      const hoursSince = lastLogin
+        ? (Date.now() - new Date(lastLogin).getTime()) / 3600000
+        : 999;
+      if (hoursSince >= 20) {
+        await pool.query(
+          "UPDATE player_currencies SET immortal_jade = immortal_jade + 5, updated_at = NOW() WHERE player_id = $1",
+          [player.id],
+        );
+        dailyBonus = { immortal_jade: 5 };
+      }
 
       // 5. 生成 Token
       const token = jwt.sign(
@@ -125,6 +141,7 @@ class AuthController {
       res.json({
         message: "登入成功",
         token,
+        dailyBonus,
         player: {
           id: player.id,
           username: player.username,
@@ -162,9 +179,11 @@ class AuthController {
                     ps.level, ps.current_exp, ps.required_exp,
                     ps.max_hp, ps.current_hp, ps.max_mp, ps.current_mp,
                     ps.attack, ps.defense, ps.speed,
-                    pc.spirit_stones, pc.immortal_jade,
+                    pc.spirit_stones, pc.immortal_jade, pc.honor_points, pc.contribution_points,
                     pr.current_exp as realm_exp,
-                    r.realm_name, rs.stage_name
+                    r.realm_name, rs.stage_name,
+                    rs.exp_required as realm_exp_required,
+                    ps.critical_rate, ps.critical_damage
                 FROM players p
                 LEFT JOIN player_stats ps ON p.id = ps.player_id
                 LEFT JOIN player_currencies pc ON p.id = pc.player_id

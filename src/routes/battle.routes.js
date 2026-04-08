@@ -11,5 +11,7 @@ router.get("/monsters", battleController.getMonsters);
 router.post("/start", validate(startBattleSchema), battleController.startBattle);
 router.get("/logs", validate(getBattleLogsSchema, "query"), battleController.getBattleLogs);
 router.post("/restore-hp", battleController.restoreHp);
+router.post("/sync-hp", battleController.syncHp);
+router.post("/action-result", battleController.submitActionResult);
 
 module.exports = router;

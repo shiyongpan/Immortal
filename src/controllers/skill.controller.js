@@ -134,9 +134,9 @@ class SkillController {
    */
   async upgradeSkill(req, res) {
     const playerId = req.user.playerId;
-    const { skillId } = req.body;
+    const { playerSkillId } = req.body;
 
-    if (!skillId) return res.status(400).json({ error: "請提供技能 ID" });
+    if (!playerSkillId) return res.status(400).json({ error: "請提供技能 ID" });
 
     const client = await pool.connect();
     try {
@@ -145,8 +145,8 @@ class SkillController {
       const psResult = await client.query(
         `SELECT ps.*, s.max_level FROM player_skills ps
                  JOIN skills s ON ps.skill_id = s.id
-                 WHERE ps.player_id = $1 AND ps.skill_id = $2`,
-        [playerId, skillId],
+                 WHERE ps.id = $1 AND ps.player_id = $2`,
+        [playerSkillId, playerId],
       );
 
       if (psResult.rows.length === 0) {
@@ -163,7 +163,7 @@ class SkillController {
       const nextLevel = ps.current_level + 1;
       const levelCostResult = await client.query(
         "SELECT level_up_cost FROM skill_levels WHERE skill_id = $1 AND level = $2",
-        [skillId, nextLevel],
+        [ps.skill_id, nextLevel],
       );
 
       const cost = levelCostResult.rows[0]?.level_up_cost || 0;
@@ -185,8 +185,8 @@ class SkillController {
       }
 
       await client.query(
-        "UPDATE player_skills SET current_level = $1 WHERE player_id = $2 AND skill_id = $3",
-        [nextLevel, playerId, skillId],
+        "UPDATE player_skills SET current_level = $1 WHERE id = $2 AND player_id = $3",
+        [nextLevel, playerSkillId, playerId],
       );
 
       await client.query("COMMIT");
