@@ -1,17 +1,14 @@
 /**
  * 戰鬥傷害計算單元測試
- * 測試 battle.controller.js 中的 calcDamage 函數邏輯
+ * 直接 import battle.controller 匯出的真實 calcDamage 函數（純函數，無副作用）
  */
-
-// 直接複製 calcDamage 函數進行單元測試（純函數，無副作用）
-function calcDamage(attack, defense, critRate, critDamage) {
-  const isCrit = Math.random() * 100 < critRate;
-  let dmg = Math.max(1, attack - defense + Math.floor(Math.random() * 5));
-  if (isCrit) dmg = Math.floor(dmg * (critDamage / 100));
-  return { damage: dmg, isCrit };
-}
+const { calcDamage } = require("../../src/controllers/battle.controller");
 
 describe("calcDamage", () => {
+  afterEach(() => {
+    jest.spyOn(Math, "random").mockRestore();
+  });
+
   test("傷害值至少為 1", () => {
     // 防禦遠大於攻擊時，傷害不應為 0 或負數
     const result = calcDamage(1, 9999, 0, 150);
@@ -39,7 +36,6 @@ describe("calcDamage", () => {
     // dmg = max(1, 100 - 10 + 0) = 90, crit = floor(90 * 200/100) = 180
     expect(result.damage).toBe(180);
     expect(result.isCrit).toBe(true);
-    jest.spyOn(Math, "random").mockRestore();
   });
 
   test("傷害計算包含防禦減免", () => {
@@ -48,6 +44,13 @@ describe("calcDamage", () => {
     // dmg = max(1, 50 - 20 + 0) = 30
     expect(result.damage).toBe(30);
     expect(result.isCrit).toBe(false);
-    jest.spyOn(Math, "random").mockRestore();
+  });
+
+  test("隨機傷害浮動最多 +4（random 接近 1 時）", () => {
+    jest.spyOn(Math, "random").mockReturnValue(0.99); // floor(0.99*5)=4，且不暴擊
+    const result = calcDamage(50, 20, 0, 150);
+    // dmg = max(1, 50 - 20 + 4) = 34
+    expect(result.damage).toBe(34);
+    expect(result.isCrit).toBe(false);
   });
 });

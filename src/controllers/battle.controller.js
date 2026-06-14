@@ -421,3 +421,5 @@ class BattleController {
 }
 
 module.exports = new BattleController();
+// 匯出純函式供單元測試使用（不影響單例控制器介面）
+module.exports.calcDamage = calcDamage;
