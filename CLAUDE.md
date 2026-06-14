@@ -29,10 +29,15 @@ npx jest -t "暴擊率 0%"                        # single test by name (names a
 
 ### Frontend (`frontend/`)
 ```bash
-npm run dev      # Vite dev server
+npm run dev      # Vite dev server (port 5173 by default)
 npm run build    # production build
+npm run preview  # preview production build locally
 npm run lint     # ESLint (no test runner is configured)
 ```
+
+### Notes
+- `nodemon` is not in `devDependencies` — install it globally (`npm i -g nodemon`) before using `npm run dev`.
+- `quick_test.js` and `test_api.js` at the repo root are ad-hoc manual scripts, not part of the Jest suite.
 
 ### Database
 PostgreSQL must be created and seeded manually. SQL lives in `sql/` (run `sql/setup_database.sql` plus the `create_*.sql` files, then `sql/seed_data.sql`). Root-level helper scripts `setup_player_tables.js` and `import_realms.js` run specific imports via `node <script>.js`. Connection comes entirely from env vars (`.env`, see `.env.example`): `DB_HOST/PORT/NAME/USER/PASSWORD`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `PORT`.
@@ -61,6 +66,30 @@ The central game system is cultivation realms. `realms` (ordered by `realm_order
 
 ### Quest auto-progression
 `src/utils/questProgress.js` (`updateQuestProgress(client, playerId, stepType, targetId, incrementBy)`) is called from within game-action transactions (e.g. after a battle win in `battle.controller`) to advance matching in-progress quest steps. It deliberately swallows its own errors (logs only) so quest-tracking failures never roll back the main action.
+
+### Realm controller constants
+`src/controllers/realm.controller.js` contains two hardcoded game-balance tables at the top:
+- `BREAKTHROUGH_PILL_BY_REALM` — maps `realm_order` (1–5) to the item ID of the boost pill for that realm
+- `CULTIVATION_RATE_PER_MIN` — maps `realm_order` to passive exp-per-minute for auto-cultivation (築基境 and above)
+
+These are the primary knobs for tuning realm progression pacing.
+
+### Frontend architecture
+The React SPA in `frontend/` is structured around three React contexts and a mirrored API layer:
+
+**Contexts (`frontend/src/contexts/`)**
+- `AuthContext` — manages player session: `player` object, JWT `token`, `login`/`register`/`logout`, `refreshPlayer`. On 401, the axios client (not the context) clears the token and hard-redirects to `/login`.
+- `BattleContext` — lightweight: only holds `battleStats` (`null` when idle, `{ hp, maxHp, mp, maxMp }` during an active battle) so multiple components can read live HP without prop drilling.
+- `WebSocketContext` — owns the WS connection lifecycle (hardcoded to `ws://localhost:3000`). Exposes `connected`, `onlineCount`, `chatMessages`, `notifications`, `connect(token)`, `disconnect()`, `sendChat(msg)`. Auto-reconnects up to 5× with a 3-second delay on close.
+
+**API layer (`frontend/src/api/`)**
+One file per backend domain (`auth.js`, `battle.js`, `inventory.js`, etc.) all import the shared `client.js` axios instance. `client.js`:
+- Hardcodes base URL `http://localhost:3000/api`
+- Injects `Authorization: Bearer <token>` from `localStorage` on every request
+- On 401 response, clears the stored token and redirects to `/login`
+
+**Pages and components**
+Game pages live under `frontend/src/pages/game/` (one page per domain: `BattlePage`, `RealmPage`, `ShopPage`, etc.) and share a `GameLayout.jsx` shell. Reusable primitives (`Button`, `Card`, `Modal`, `Notification`, `ProgressBar`) live in `frontend/src/components/ui/`. The `useApi` hook (`frontend/src/hooks/useApi.js`) is the standard pattern for triggering async API calls from components.
 
 ### Logging
 `src/utils/logger.js` is a Winston logger used everywhere. Tests mock it out in `tests/setup.js`.
