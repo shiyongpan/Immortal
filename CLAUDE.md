@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 溝通語言
+
+與使用者溝通時一律使用中文（繁體中文）回覆。
+
 ## Overview
 
 A cultivation-themed (修仙) RPG. The backend is a Node.js + Express 5 + PostgreSQL API at the repo root; the frontend is a React 19 + Vite + Tailwind SPA in `frontend/`. Code comments and all user-facing strings (errors, messages) are written in Traditional Chinese — match this when editing.
