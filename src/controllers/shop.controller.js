@@ -208,9 +208,9 @@ class ShopController {
    */
   async sellItem(req, res) {
     const playerId = req.user.playerId;
-    const { inventoryItemId, quantity = 1 } = req.body;
+    const { inventoryId, quantity = 1 } = req.body;
 
-    if (!inventoryItemId) return res.status(400).json({ error: "請提供背包物品 ID" });
+    if (!inventoryId) return res.status(400).json({ error: "請提供背包物品 ID" });
 
     const client = await pool.connect();
     try {
@@ -221,7 +221,7 @@ class ShopController {
                  FROM player_inventory pi
                  JOIN items i ON pi.item_id = i.id
                  WHERE pi.id = $1 AND pi.player_id = $2`,
-        [inventoryItemId, playerId],
+        [inventoryId, playerId],
       );
 
       if (invResult.rows.length === 0) {
