@@ -84,6 +84,24 @@ class BattleController {
 
       const monster = monsterResult.rows[0];
 
+      // 查詢玩家是否裝備具有復活效果的技能（最高 revive_hp_rate 優先）
+      const reviveResult = await client.query(
+        `SELECT s.effects
+         FROM player_skills ps
+         JOIN skills s ON ps.skill_id = s.id
+         WHERE ps.player_id = $1
+           AND ps.is_equipped = true
+           AND (s.effects->>'revive')::boolean = true
+         ORDER BY (s.effects->>'revive_hp_rate')::float DESC
+         LIMIT 1`,
+        [playerId]
+      );
+      let reviveHpRate = null;
+      let reviveUsed = false;
+      if (reviveResult.rows.length > 0) {
+        reviveHpRate = parseFloat(reviveResult.rows[0].effects.revive_hp_rate);
+      }
+
       // 模擬戰鬥
       let playerHp = player.current_hp;
       let monsterHp = Number(monster.max_hp);
@@ -110,6 +128,15 @@ class BattleController {
         const monsterAtk = calcDamage(monster.attack, player.defense, monster.critical_rate, 150);
         playerHp -= monsterAtk.damage;
         roundLog.monsterDmg = monsterAtk.damage;
+
+        // 復活技能攔截：玩家 HP 歸零時觸發一次（涅槃重生 / 逆天改命）
+        if (playerHp <= 0 && reviveHpRate !== null && !reviveUsed) {
+          playerHp = Math.floor(player.max_hp * reviveHpRate);
+          reviveUsed = true;
+          roundLog.reviveTriggered = true;
+          roundLog.reviveHpRestored = playerHp;
+        }
+
         rounds.push(roundLog);
       }
 

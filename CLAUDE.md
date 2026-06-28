@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 專案概覽 (Overview)
 
-修仙題材 RPG 遊戲。後端（repo root）為 Node.js + Express 5 + PostgreSQL API；前端（`frontend/`）為 React 19 + Vite + Tailwind SPA。程式碼註解與所有面向使用者的字串（錯誤訊息、回應文字）均使用**繁體中文**撰寫，修改時請保持一致。
+修仙題材 RPG 遊戲。後端（repo root）為 Node.js + Express 5 + PostgreSQL API；前端（`frontend/`）為 React 19 + Vite + Tailwind + Three.js 3D SPA。程式碼註解與所有面向使用者的字串（錯誤訊息、回應文字）均使用**繁體中文**撰寫，修改時請保持一致。
 
 ## 常用指令 (Commands)
 
@@ -88,8 +88,28 @@ PostgreSQL 需手動建立並 seed。SQL 檔案放在 `sql/`（依序執行 `sql
 - 每次請求自動從 `localStorage` 注入 `Authorization: Bearer <token>`
 - 收到 401 response 時清除 token 並跳轉 `/login`
 
-**頁面與元件 (Pages & Components)**
-遊戲頁面放於 `frontend/src/pages/game/`（每個 domain 一個頁面：`BattlePage`、`RealmPage`、`ShopPage` 等），共用 `GameLayout.jsx` 外框。可重用的 UI 元件（`Button`、`Card`、`Modal`、`Notification`、`ProgressBar`）放於 `frontend/src/components/ui/`。`useApi` hook（`frontend/src/hooks/useApi.js`）是 component 呼叫非同步 API 的標準模式，回傳 `{ data, loading, error, execute, setData }`。
+**3D 渲染層（核心架構）**
+前端以 Three.js（`@react-three/fiber` + `@react-three/drei` + `@react-three/postprocessing`）為主要渲染引擎，而非傳統 React DOM 頁面切換。
+
+- `GameLayout.jsx` 驗證登入後直接渲染 `GameWorld.jsx`（Three.js `<Canvas>`）。
+- `GameWorld.jsx` 根據 URL path，透過 `SCENE_MAP`（path → Scene3D 元件）和 `SCENE_HUD_MAP`（path → HUD 元件）動態切換場景，本身**不是** React Router `<Routes>`。
+- `frontend/src/scenes/*Scene3D.jsx`：每個 domain 一個 3D 場景（Three.js 物件 + 遊戲邏輯），是遊戲的實際畫面。
+- `frontend/src/pages/game/*Page.jsx`：HTML UI 面板（清單、按鈕、道具欄等），以 `BridgedHtml` 嵌入 3D Canvas 內的 HTML overlay，**不是**獨立 route 元件。`LoginPage` / `RegisterPage` 是例外，為真實路由頁面。
+- `BridgedHtml.jsx`（`frontend/src/components/3d/BridgedHtml.jsx`）：使用 `useContextBridge` 將 AuthContext、WebSocketContext、BattleContext 及 Router context 橋接進 Three.js `<Html>` 環境，讓 pages 能在 Canvas 內正常使用 context。
+
+**戰鬥小遊戲引擎**
+`frontend/src/components/battle/ActionBattle.jsx` + `gameEngine.js` 是一套獨立的 **2D Canvas 引擎**（非 Three.js），在 `BattleScene3D` 場景內運行。`gameEngine.js` 匯出工廠函式（`createPlayer`、`createEnemy`）、碰撞偵測、傷害計算（`calcDmg`）與粒子系統。`BattleScene3D.jsx` 頂部定義了模組層級的 mutable signal var（`battleAnimSignal`、`battleHitSignal`），用以協調 React state 與 Three.js `useFrame` 動畫迴圈之間的事件通知。
+
+**鏡像常數警示**
+`frontend/src/scenes/RealmScene3D.jsx` 頂部的 `BREAKTHROUGH_PILL`（item ID）與 `CULTIVATION_RATE`（每分鐘修為）必須與後端 `src/controllers/realm.controller.js` 的 `BREAKTHROUGH_PILL_BY_REALM` / `CULTIVATION_RATE_PER_MIN` **保持同步**；修改境界平衡時兩處都要更新。
+
+**共用工具（`frontend/src/utils/`）**
+- `format.js`：`formatNumber`（萬/億格式化）、`formatPercent`、`RARITY_COLORS`（稀有度 Tailwind class map）
+- `storage.js`：localStorage token 存取封裝
+
+**可重用 UI 元件（`frontend/src/components/ui/`）**：`Button`、`Card`、`Modal`、`Notification`、`ProgressBar`
+
+`useApi` hook（`frontend/src/hooks/useApi.js`）是 component 呼叫非同步 API 的標準模式，回傳 `{ data, loading, error, execute, setData }`。
 
 ### Logging
 `src/utils/logger.js` 是全專案使用的 Winston logger。測試中透過 `tests/setup.js` mock 掉。
@@ -99,6 +119,7 @@ PostgreSQL 需手動建立並 seed。SQL 檔案放在 `sql/`（依序執行 `sql
 - Jest 設定在 `package.json`；`tests/setup.js` 設定測試用環境變數（`JWT_SECRET` 等）並 mock logger。
 - **Integration tests mock 資料庫模組**，而非連接真實 DB：`jest.mock("../../src/config/database")` 回傳可被各 test 控制的假 pool（`query`/`connect`）。在測試中用 `express()` + `require("../../src/routes")` 建立 app，並以測試用 `JWT_SECRET` 簽發 token（參考 `tests/integration/battle.routes.test.js`）。
 - Coverage 目前偏低，集中於 validators/middleware；大部分 controller 與 WebSocket layer 尚未測試。
+- 前端已安裝 Playwright（`frontend/devDependencies`），但目前尚無 e2e test 檔案。
 
 <!-- AI_INSTRUCTIONS_START -->
 # 🤖 AI Coding Guidelines (For LLM Assistants)
