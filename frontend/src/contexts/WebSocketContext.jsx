@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 
 const WS_URL = "ws://localhost:3000";
-const WebSocketContext = createContext(null);
+export const WebSocketContext = createContext(null);
 
 export function WebSocketProvider({ children }) {
   const wsRef = useRef(null);

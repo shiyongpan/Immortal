@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-const BattleContext = createContext(null);
+export const BattleContext = createContext(null);
 
 /**
  * battleStats: null（非戰鬥中）
